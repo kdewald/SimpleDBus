@@ -1,4 +1,5 @@
-cmake_minimum_required(VERSION 3.0.0)
+cmake_minimum_required(VERSION 3.16.0)
+
 
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
@@ -37,7 +38,7 @@ target_compile_options(simpledbus PRIVATE -std=c++17 -fPIC -Wfatal-errors -Wpeda
 target_link_libraries(simpledbus-static PUBLIC ${DBUS_LIBRARIES})
 target_link_libraries(simpledbus PUBLIC ${DBUS_LIBRARIES})
 
-message("-- [INFO] Building BlueZDBus")
+message("-- [INFO] Building BluezDBus")
 file(GLOB_RECURSE SRC_BLUEZDBUS_FILES "${CMAKE_CURRENT_SOURCE_DIR}/src/bluezdbus/*.cpp")
 
 add_library(bluezdbus-static STATIC ${SRC_BLUEZDBUS_FILES})
@@ -52,4 +53,17 @@ target_link_libraries(bluezdbus PUBLIC simpledbus-static)
 # Export the variables needed by the parent project
 if(NOT ${STANDALONE})
     set(SIMPLEDBUS_INCLUDES ${CMAKE_CURRENT_SOURCE_DIR}/src ${DBUS_INCLUDE_DIRS} PARENT_SCOPE)
+endif()
+
+message("-- [INFO] Building Unit Test")
+
+include(FetchContent)
+FetchContent_Declare(
+  googletest
+  URL https://github.com/google/googletest/archive/refs/tags/release-1.10.0.zip
+)
+FetchContent_GetProperties(googletest)
+if(NOT googletest_POPULATED)
+  FetchContent_Populate(googletest)
+  add_subdirectory(${googletest_SOURCE_DIR} ${googletest_BINARY_DIR})
 endif()
